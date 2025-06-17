@@ -1,0 +1,92 @@
+# FastAPI Web框架及相关依赖
+fastapi>=0.115.0,<0.116.0
+uvicorn>=0.30.0
+starlette>=0.45.0
+pydantic>=2.10.0,<3.0.0
+pydantic-core>=2.30.0,<3.0.0
+
+# 数据库相关
+sqlalchemy>=2.0.0,<3.0.0
+
+# 认证和安全
+bcrypt>=4.0.0
+python-jose[cryptography]>=3.3.0
+passlib>=1.7.0
+cryptography>=40.0.0
+
+# 文件处理
+python-multipart>=0.0.20
+PyPDF2>=3.0.0
+PyMuPDF>=1.23.0
+python-docx>=0.8.0
+reportlab>=4.0.0
+
+# 环境配置
+python-dotenv>=1.0.0
+
+# AI和机器学习相关依赖
+openai>=1.50.0
+langchain>=0.3.0,<0.4.0
+langchain-core>=0.3.0,<0.4.0
+langchain-text-splitters>=0.3.0,<0.4.0
+tiktoken>=0.7.0
+chromadb>=1.0.0,<2.0.0
+sentence-transformers>=4.0.0
+transformers>=4.40.0
+torch>=2.0.0
+
+# Google AI服务
+google-genai>=1.0.0
+google-generativeai>=0.8.0
+google-ai-generativelanguage>=0.6.0
+google-api-core>=2.20.0
+google-auth>=2.30.0
+googleapis-common-protos>=1.60.0
+
+# 文本处理和网页解析
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+soupsieve>=2.5.0
+
+# 数据处理
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+scikit-learn>=1.5.0
+scipy>=1.10.0
+
+# 缓存和性能
+cachetools>=5.0.0
+
+# HTTP客户端
+requests>=2.31.0
+httpx>=0.25.0
+httpcore>=1.0.0
+
+# 异步支持
+anyio>=4.0.0
+
+# 日志和监控
+coloredlogs>=15.0.0
+
+# 工具库
+click>=8.0.0
+typer>=0.12.0
+tqdm>=4.65.0
+tenacity>=8.0.0
+packaging>=23.0.0
+python-dateutil>=2.8.0
+
+# JSON处理
+orjson>=3.9.0
+
+# 类型检查
+typing-extensions>=4.8.0
+
+# 文件监控 (开发环境)
+watchfiles>=1.0.0
+
+# 其他工具
+PyYAML>=6.0.0
+Pillow>=10.0.0
+markdown-it-py>=3.0.0
+rich>=13.0.0

@@ -1,0 +1,1089 @@
+{
+  "info": {
+    "name": "AI驱动协同文献管理系统 API",
+    "description": "完整的API测试集合，包含认证、用户管理、研究组、文献管理、AI助手、对话管理、缓存管理和管理员功能",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "group_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "literature_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "turn_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "认证系统",
+      "item": [
+        {
+          "name": "用户注册",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"phone_number\": \"13800000001\",\n  \"password\": \"testpass123\",\n  \"password_confirm\": \"testpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "手机号登录",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', responseJson.access_token);",
+                  "    if (responseJson.refresh_token) {",
+                  "        pm.collectionVariables.set('refresh_token', responseJson.refresh_token);",
+                  "    }",
+                  "    pm.test('登录成功', function () {",
+                  "        pm.expect(responseJson.access_token).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone_number\": \"13800000001\",\n  \"password\": \"testpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "传统用户名登录",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', responseJson.access_token);",
+                  "    pm.test('传统登录成功', function () {",
+                  "        pm.expect(responseJson.access_token).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "username",
+                  "value": "testuser",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "testpass123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "刷新访问令牌",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', responseJson.access_token);",
+                  "    pm.test('Token刷新成功', function () {",
+                  "        pm.expect(responseJson.access_token).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "用户管理",
+      "item": [
+        {
+          "name": "获取当前用户信息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/user/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取用户研究组",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.groups && responseJson.groups.length > 0) {",
+                  "        pm.collectionVariables.set('group_id', responseJson.groups[0].id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/groups",
+              "host": ["{{base_url}}"],
+              "path": ["user", "groups"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "研究组管理",
+      "item": [
+        {
+          "name": "创建研究组",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('group_id', responseJson.group_id);",
+                  "    pm.test('研究组创建成功', function () {",
+                  "        pm.expect(responseJson.group_id).to.not.be.undefined;",
+                  "        pm.expect(responseJson.invitation_code).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/groups/create?name=API测试研究组&institution=测试大学&description=通过API创建的测试研究组&research_area=软件测试",
+              "host": ["{{base_url}}"],
+              "path": ["groups", "create"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "API测试研究组"
+                },
+                {
+                  "key": "institution",
+                  "value": "测试大学"
+                },
+                {
+                  "key": "description",
+                  "value": "通过API创建的测试研究组"
+                },
+                {
+                  "key": "research_area",
+                  "value": "软件测试"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "加入研究组",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/groups/join?group_id={{group_id}}&invitation_code=ABC12345",
+              "host": ["{{base_url}}"],
+              "path": ["groups", "join"],
+              "query": [
+                {
+                  "key": "group_id",
+                  "value": "{{group_id}}"
+                },
+                {
+                  "key": "invitation_code",
+                  "value": "ABC12345",
+                  "description": "请替换为实际的邀请码"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "文献管理",
+      "item": [
+        {
+          "name": "上传文献",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('literature_id', responseJson.literature_id);",
+                  "    pm.test('文献上传成功', function () {",
+                  "        pm.expect(responseJson.literature_id).to.not.be.undefined;",
+                  "        pm.expect(responseJson.title).to.not.be.undefined;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "选择一个PDF或Word文档"
+                },
+                {
+                  "key": "group_id",
+                  "value": "{{group_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "API测试文献",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/literature/upload",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取研究组文献列表",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.literature && responseJson.literature.length > 0) {",
+                  "        pm.collectionVariables.set('literature_id', responseJson.literature[0].id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/public/{{group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "public", "{{group_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取文献详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/detail/{{literature_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "detail", "{{literature_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "查看文献文件",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/view/file/{{literature_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "view", "file", "{{literature_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "下载文献文件",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/download/{{literature_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "download", "{{literature_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "文献高级管理",
+      "item": [
+        {
+          "name": "软删除文献",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/{{literature_id}}?reason=测试删除",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "{{literature_id}}"],
+              "query": [
+                {
+                  "key": "reason",
+                  "value": "测试删除"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "恢复已删除文献",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/{{literature_id}}/restore",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "{{literature_id}}", "restore"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取已删除文献列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/deleted/{{group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "deleted", "{{group_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取文献统计信息",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/stats/{{group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "stats", "{{group_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI助手",
+      "item": [
+        {
+          "name": "获取预设问题",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/preset-questions/{{literature_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "preset-questions", "{{literature_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AI问答",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.session_id) {",
+                  "        pm.collectionVariables.set('session_id', responseJson.session_id);",
+                  "    }",
+                  "    if (responseJson.turn_id) {",
+                  "        pm.collectionVariables.set('turn_id', responseJson.turn_id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"这篇文献的主要内容是什么？\",\n  \"literature_id\": \"{{literature_id}}\",\n  \"max_sources\": 5,\n  \"include_history\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/ask",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "ask"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AI问答 - 带对话历史",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"能详细解释一下吗？\",\n  \"literature_id\": \"{{literature_id}}\",\n  \"session_id\": \"{{session_id}}\",\n  \"max_sources\": 3,\n  \"include_history\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/ask",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "ask"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "对话管理",
+      "item": [
+        {
+          "name": "获取用户会话列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/sessions?literature_id={{literature_id}}&limit=20&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "sessions"],
+              "query": [
+                {
+                  "key": "literature_id",
+                  "value": "{{literature_id}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取对话历史",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/conversation/{{session_id}}?include_full_content=true&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "conversation", "{{session_id}}"],
+              "query": [
+                {
+                  "key": "include_full_content",
+                  "value": "true"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "删除对话会话",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/conversation/{{session_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "conversation", "{{session_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "对话反馈",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"turn_id\": \"{{turn_id}}\",\n  \"rating\": 5,\n  \"feedback\": \"回答很有帮助\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/feedback",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "feedback"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "缓存管理",
+      "item": [
+        {
+          "name": "获取缓存统计",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/stats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "缓存健康检查",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/health",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "清理所有缓存",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/clear?cache_type=all",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "clear"],
+              "query": [
+                {
+                  "key": "cache_type",
+                  "value": "all"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "清理Embedding缓存",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/clear?cache_type=embedding",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "clear"],
+              "query": [
+                {
+                  "key": "cache_type",
+                  "value": "embedding"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取缓存详细信息",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/info/embedding",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "info", "embedding"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取缓存键列表",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/keys/embedding?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "keys", "embedding"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "预热缓存",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"literature_ids\": [\"{{literature_id}}\"],\n  \"cache_types\": [\"embedding\", \"chunk\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/cache/warm",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "warm"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "缓存性能测试",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/cache/benchmark",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "cache", "benchmark"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "管理员功能",
+      "item": [
+        {
+          "name": "获取存储统计",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/storage/stats",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "storage", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "清理存储",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/storage/cleanup",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "storage", "cleanup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AI服务统计",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/stats",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "stats"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "系统健康",
+      "item": [
+        {
+          "name": "系统根路径",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "基础健康检查",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AI服务健康检查",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/ai",
+              "host": ["{{base_url}}"],
+              "path": ["health", "ai"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "AI服务健康检查（简化版）",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/health",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "错误场景测试",
+      "item": [
+        {
+          "name": "未授权访问",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/user/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "无效文献ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/detail/invalid-id",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "detail", "invalid-id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "空问题AI请求",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"\",\n  \"literature_id\": \"{{literature_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai/ask",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "ask"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "无效登录凭据",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone_number\": \"99999999999\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "访问不存在的会话",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai/conversation/invalid-session-id",
+              "host": ["{{base_url}}"],
+              "path": ["ai", "conversation", "invalid-session-id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "删除不存在的文献",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/literature/invalid-id",
+              "host": ["{{base_url}}"],
+              "path": ["literature", "invalid-id"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+} 
