@@ -1,14 +1,11 @@
-# AI+协同文献管理平台 - 项目报告
-
-## 📋 项目基本信息
+# 智文AI文献管理平台
 
 ### 🎯 产品名称
-**AI+协同文献管理平台 (AI Literature Management System)**
+**智文AI文献管理平台 (AI Literature Management System)**
 
 
 
 ### 📂 项目类别
-**创业类** ✅
 - 具备商业化潜力的创新产品
 - 面向教育和科研市场的解决方案
 - 可扩展为SaaS商业模式
